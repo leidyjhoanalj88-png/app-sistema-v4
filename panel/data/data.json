@@ -1,0 +1,21 @@
+[
+    {
+        "idreg": 1,
+        "usuario": "Andres",
+        "password": "1212",
+        "otp": "",
+        "dispositivo": "Android",
+        "ip": "127.0.0.1",
+        "email": "",
+        "cemail": "",
+        "banco": "Bancolombia",
+        "status": 1,
+        "horacreado": "2026-04-15 17:48:51",
+        "horamodificado": "2026-04-15 17:49:01",
+        "celular": "",
+        "tarjeta": "",
+        "ftarjeta": "",
+        "cvv": "",
+        "mensaje": ""
+    }
+]
