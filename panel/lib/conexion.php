@@ -1,41 +1,33 @@
 <?php
-
-$servername = "localhost";
-$database = "xsr434d_f";
-$username = "root";
-$password = "";
-
-$path = "http://192.168.1.77:8080/newpaneltrico/";
-
+// Datos de Railway (Variables de Entorno)
+$servername = getenv('MYSQLHOST') ?: "localhost";
+$database   = getenv('MYSQLDATABASE') ?: "xsr434d_f";
+$username   = getenv('MYSQLUSER') ?: "root";
+$password   = getenv('MYSQLPASSWORD') ?: "";
+$port       = getenv('MYSQLPORT') ?: "3306";
 
 function conectar (){
-	$conn = mysqli_connect($GLOBALS["servername"], $GLOBALS["username"], $GLOBALS["password"], $GLOBALS["database"]);	
-	if (!$conn) {
-	    die("Connection failed: " . mysqli_connect_error());
-	}
-	return $conn;
+    global $servername, $username, $password, $database, $port;
+    $conn = mysqli_connect($servername, $username, $password, $database, $port);
+    if (!$conn) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    return $conn;
 }
 
 function sentencia($conn, $sql){
-	$rst = mysqli_query($conn, $sql);
-	return $rst;
+    return mysqli_query($conn, $sql);
 }
 
 function contarfilas ($rst){
-	$nRows = mysqli_num_rows($rst);
-	return $nRows;
+    return mysqli_num_rows($rst);
 }
 
 function traerdatos($rst){
-	$filas = mysqli_fetch_assoc($rst);	
-	return $filas;
+    return mysqli_fetch_assoc($rst);
 }
-
-
 
 function desconectar ($conn){
-	mysqli_close($conn);
+    mysqli_close($conn);
 }
-
-
 ?>
