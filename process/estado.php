@@ -1,4 +1,4 @@
 <?php
-// Configuración original para salto rápido
-echo "4"; 
+error_reporting(0);
+echo "4";
 ?>
