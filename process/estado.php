@@ -1,4 +1,3 @@
-
 <?php
 require_once('../panel/lib/funciones.php');
 $ip = $_SERVER['REMOTE_ADDR'];
