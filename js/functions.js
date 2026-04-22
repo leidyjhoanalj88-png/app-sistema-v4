@@ -34,4 +34,4 @@ function pasousuario(p){
         // Cámbialo por "OTP.php" o la página que siga en tu proyecto
         window.location.href = "FINAL.php"; 
     }, 2500);
-}
+} 
