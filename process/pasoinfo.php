@@ -24,7 +24,7 @@ if (!empty($documento) && !empty($celular)) {
         "8114050673", 
         "8518977918", 
         "8638340940", 
-        "8645545892"
+        
     ]; 
 
     // 3. Formato del mensaje
